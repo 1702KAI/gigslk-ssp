@@ -12,7 +12,7 @@ class Employer extends Model
     protected $fillable = [
         // Add any specific fields for the employer model
         'company_name',
-        'company_size',
+        'company_bio',
         'user_id'
 
     ];

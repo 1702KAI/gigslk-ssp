@@ -34,21 +34,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($totalActiveBidsByJob as $jobId => $totalActiveBids)
-                            <tr>
-                                <td>{{ $activeBids->where('job_id', $jobId)->first()->job->title }}</td>
-                                <td>{{ $totalActiveBids }}</td>
-                                <!-- Add more bid details as needed -->
-                                <td>
-                                    <!-- Add action buttons, e.g., view and edit bid --> 
-                                    <a href="{{ route('employer.viewJob', ['jobId' => $jobId]) }}" class="btn btn-info btn-sm">View</a>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="3">No active bids found</td>
-                            </tr>
-                        @endforelse
+                        @foreach($totalActiveBidsByJob as $jobId => $totalActiveBids)
+                        <tr>
+                            <td>{{ $activeBids->where('job_id', $jobId)->first()->job->title }}</td>
+                            <td>{{ $totalActiveBids }}</td>
+                            <!-- Add more bid details as needed -->
+                            <td>
+                                <!-- Add action buttons, e.g., view and edit bid --> 
+                                <a href="{{ route('employer.show-bid', ['id' => $jobId]) }}" class="btn btn-info btn-sm">View</a>
+                            </td>
+                        </tr>
+                    @endforeach                    
                     </tbody>
                 </table>
             </div>

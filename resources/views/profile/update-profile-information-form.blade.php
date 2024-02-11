@@ -73,8 +73,7 @@
             <x-input-error for="address" class="mt-2" />
         </div>
 
-        @if (Auth::user()->role_id == 2)
-
+        @can('freelancer')
         <!-- Bio -->
         <div class="col-span-6 sm:col-span-4">
             <label for="bio" class="block text-sm font-medium text-gray-700">{{ __('Bio') }}</label>
@@ -95,22 +94,21 @@
             <x-input id="tags" type="text" class="mt-1 block w-full" wire:model="state.tags" required autocomplete="tags" />
             <x-input-error for="tags" class="mt-2" />
         </div>
-        @elseif (Auth::user()->role_id == 3)
+        @endcan
+        @can('employer')
          <!-- Company Name -->
          <div class="col-span-6 sm:col-span-4">
             <x-label for="company_name" value="{{ __('Company Name') }}" />
-            <x-input id="company_name" type="text" class="mt-1 block w-full" wire:model="state.company_name" required autocomplete="tags" />
-            <x-input-error for="ccompany_namey" class="mt-2" />
+            <x-input id="company_name" type="text" class="mt-1 block w-full" wire:model="state.company_name" required autocomplete="company_name" />
+            <x-input-error for="company_namey" class="mt-2" />
         </div>
         <!-- Company Bio -->
         <div class="col-span-6 sm:col-span-4">
-            <label for="bio" class="block text-sm font-medium text-gray-700">{{ __('Company Bio') }}</label>
-            <textarea id="bio" name="bio" class="mt-1 block w-full form-input rounded-md shadow-sm" wire:model="state.bio" required autocomplete="bio"></textarea>
-            <x-input-error for="bio" class="mt-2" />
+            <label for="company_bio" class="block text-sm font-medium text-gray-700">{{ __('Company Bio') }}</label>
+            <textarea id="company_bio" name="company_bio" class="mt-1 block w-full form-input rounded-md shadow-sm" wire:model="state.company_bio" required autocomplete="company_bio"></textarea>
+            <x-input-error for="company_bio" class="mt-2" />
         </div>
-        @endif
-
-
+        @endcan
         <!-- Email -->
         <div class="col-span-6 sm:col-span-4">
             <x-label for="email" value="{{ __('Email') }}" />

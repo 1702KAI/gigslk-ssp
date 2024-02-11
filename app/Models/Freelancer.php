@@ -13,7 +13,6 @@ class Freelancer extends Model
         // Add any specific fields for the freelancer model
         'hourly_rate',
         'skills',
-        'experience',
         'user_id',
         'tags',
     ];

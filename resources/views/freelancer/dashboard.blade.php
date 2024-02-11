@@ -21,7 +21,7 @@
                     <div class="mt-8 w-full">
                             <p class="text-2xl text-green-900 ">Projects Overview</p>
                             <br>
-                            <x-dashboard-project-completed />
+                            <x-dashboard-project-completed :projects="$projects" />
                     </div>
                 </div>
             </div>

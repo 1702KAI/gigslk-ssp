@@ -21,6 +21,13 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'mobile_number' => ['nullable', 'string', 'max:255'],
+            'bio' => ['nullable', 'string', 'max:500'],
+            'hourly_rate' => ['nullable', 'numeric', 'min:0'],
+            'tags' => ['nullable', 'string', 'max:255'],
+            'company_name' => ['nullable', 'string', 'max:255'],
+            'company_bio' => ['nullable', 'string', 'max:500'],
         ])->validateWithBag('updateProfileInformation');
 
         if (isset($input['photo'])) {
@@ -31,16 +38,30 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             $user instanceof MustVerifyEmail) {
             $this->updateVerifiedUser($user, $input);
         } else {
+            // Update common user profile information
             $user->forceFill([
                 'name' => $input['name'],
                 'email' => $input['email'],
                 'address' => $input['address'],
-                'job_title' => $input['job_title'],
                 'mobile_number' => $input['mobile_number'],
-                'hourly_rate' => $input['hourly_rate'],
-                'tags' => $input['tags'],
                 'bio' => $input['bio'],
             ])->save();
+
+            // Check if the user has a Freelancer model and update specific information
+            if ($user->freelancer) {
+                $user->freelancer->update([
+                    'hourly_rate' => $input['hourly_rate'],
+                    'tags' => $input['tags'],
+                ]);
+
+            // Check if the user has a Employer model and update specific information
+            } elseif ($user->employer) {
+                $user->employer->update([
+                    'company_name' => $input['company_name'],
+                    'company_bio' => $input['company_bio'],
+
+                ]);
+            }
         }
     }
 

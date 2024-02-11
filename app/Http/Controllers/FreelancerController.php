@@ -63,7 +63,7 @@ class FreelancerController extends Controller
         return redirect()->route('freelancer.manage-bids')->with('success', 'Bid placed successfully');
     }
 
-    function manageBids() {
+    function manageBids_index() {
         // Get the authenticated user
         $user = auth()->user();
     
@@ -83,5 +83,7 @@ class FreelancerController extends Controller
 
         return redirect()->route('freelancer.manage-bids')->with('success', 'Bid deleted successfully');
     }
+
+    
     
 }

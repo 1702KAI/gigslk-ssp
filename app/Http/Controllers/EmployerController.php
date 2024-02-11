@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Job;
+use App\Models\Bid;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Employer;
+use App\Models\Project;
 
 
 class EmployerController extends Controller
@@ -101,7 +103,7 @@ class EmployerController extends Controller
     
     }
 
-    public function manageBids()
+    public function manageBids_index()
         {
         // Get the authenticated user
         $user = Auth::user();
@@ -137,8 +139,70 @@ class EmployerController extends Controller
         return view('employer.manage-bids.index', compact('activeBids', 'activeFreelancerCount', 'totalActiveBidsByJob'));
     }
 
-    public function viewProject($id)
+    public function manageBids_show($jobId)
     {
-        return view('employer.view_project', ['id' => $id]);
+        // Retrieve only active bids with associated job and freelancer information for the specified job
+        $activeBids = Bid::with(['freelancer'])
+            ->where('job_id', $jobId)
+            ->where('status', 'active')
+            ->get();
+    
+        // Retrieve job information from the jobs table
+        $job = Job::find($jobId);
+    
+        return view('employer.manage-bids.show', compact('activeBids', 'job'));
     }
+
+    public function manageBids_acceptBid(Bid $bid)
+    {
+        // Notify the freelancer that their bid has been accepted
+        // $bid->freelancer->notify(new BidAcceptedNotification($bid->job));
+    
+        // Update the status of the accepted bid to 'in-progress'
+        $bid->update(['status' => 'in-progress']);
+    
+        // Update the statuses of other bids for the same job to 'declined'
+        $jobBids = Bid::where('job_id', $bid->job_id)->where('id', '!=', $bid->id)->get();
+    
+        foreach ($jobBids as $otherBid) {
+            $otherBid->update(['status' => 'declined']);
+        }
+    
+        // Check if a project already exists for this job
+        $existingProject = Project::where('job_id', $bid->job_id)->first();
+    
+        // If a project doesn't exist, create a new project record
+        if (!$existingProject) {
+            $project = Project::create([
+                'job_id' => $bid->job_id,
+                'freelancer_id' => $bid->freelancer_id,
+                'bid_proposal' => $bid->proposal,
+                'freelancer_portfolio' => $bid->portfolio,
+                'project_owner' => Auth::user()->name, // Assuming the employer's name is the project owner
+                'budget' => $bid->job->budget,
+                'timeline' => $bid->job->duration,
+                'status' => 'in-progress', // or any default status
+            ]);
+        }
+    
+        $bid->job->update(['show' => false]);
+    
+        return redirect()->route('employer.show-bid', $bid->job->id)->with('success', 'Bid accepted successfully');
+    }
+    
+    public function manageBids_rejectBid($id)
+    {
+        $bid = Bid::find($id);
+    
+        if ($bid) {
+            // Use the declineBid method for consistency and additional logic
+            $this->declineBid($bid);
+    
+            return redirect()->route('employer.manage-bids')->with('success', 'Bid rejected successfully');
+        } else {
+            // Handle the case where the bid with the given $id is not found
+            return redirect()->route('employer.manage-bids')->with('error', 'Bid not found');
+        }
+    }
+    
 }
