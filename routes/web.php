@@ -52,7 +52,8 @@ Route::middleware([
 
     // Common routes
     Route::prefix('project')->group(function () {
-        Route::get('view/{id}', [ProjectController::class, 'index'])->name('project.view-project');
+        Route::get('view/{id}', [ProjectController::class, 'viewProject_index'])->name('project.view-project');
+        Route::post('create/{id}', [ProjectController::class, 'viewProject_storeTask'])->name('project.store-task');
     });
 });
 
